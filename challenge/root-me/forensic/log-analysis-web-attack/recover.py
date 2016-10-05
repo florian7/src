@@ -3,7 +3,7 @@
 import base64, sys, re, datetime
 
 def get_timestamp(time_string):
-    return -datetime.datetime.strptime(time_string, '%H:%M:%S').timestamp()
+    return -int(datetime.datetime.strptime(time_string, '%H:%M:%S').timestamp())
 
 def revbits(x):
     return int(bin(x)[2:].zfill(7)[::-1], 2)
@@ -20,6 +20,7 @@ timestamp = 0
 last_timestamp = 0
 value = 0
 password = []
+password2 = []
 for i, line in enumerate(lines):
 
     time_string = re.sub('.*:(\d{2}:\d{2}:\d{2}).*', r'\1', line)
@@ -42,10 +43,16 @@ for i, line in enumerate(lines):
     print("[{}] = {} +{} {:#010b}".format(time_string, timestamp, difference, value))
 
     if i % 4 == 0:
+
         value //= 2
+
+        if difference == 0:
+            value //= 2
+
         password += [chr(value)]
+        password2 += [chr(value // 2)]
         
-        print("value: 0x{:07X} = {:#07b}".format(value, value))
+        print("value: {:#07b} [{}]".format(value, chr(value)))
 
         value = 0
 
@@ -54,4 +61,5 @@ for i, line in enumerate(lines):
         value *= 4
 
 print(''.join(password))
+print(''.join(password2))
 print(len(password))
