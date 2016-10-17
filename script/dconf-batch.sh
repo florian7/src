@@ -14,27 +14,44 @@ EOM
 
 function storage_file () {
 	dconf_dir=$1
-	echo $(						\
+	echo $storage_dir/$(						\
 		echo $dconf_dir 		\
 			| sed 's/^\///g' 	\
 			| sed 's/\/$//g' 	\
 			| sed 's/\//-/g').conf
 }
 
-function dump () {
+function action () {
 	for dconf_dir in $dconf_dirs; do
-		file=$(storage_file $dconf_dir)
-		echo Dumping $file ...
-		dconf dump $dconf_dir > $storage_dir/$file
+		action_$1 $dconf_dir
 	done
 }
 
-function load () {
-	for dconf_dir in $dconf_dirs; do
-		file=$(storage_file $dconf_dir)
-		echo Loading $file ...
-		dconf load $dconf_dir < $storage_dir/$file
-	done
+function action_dump () {
+	dconf_dir=$1
+	file=$(storage_file $dconf_dir)
+
+	echo Dumping $file ...
+	dconf dump $dconf_dir > $file
+}
+
+function action_load () {
+	dconf_dir=$1
+	file=$(storage_file $dconf_dir)
+
+	echo Loading $file ...
+	dconf load $dconf_dir < $file
+}
+
+function action_diff () {
+	dconf_dir=$1
+	file=$(storage_file $dconf_dir)
+	tmp_file=$file.tmp
+
+	echo Looking for differences in $file ...
+	dconf dump $dconf_dir > $tmp_file
+	diff $file $tmp_file
+	rm $tmp_file
 }
 
 function help () {
@@ -43,10 +60,13 @@ function help () {
 
 case $1 in
 	dump)
-		dump
+		action dump
 		;;
 	load)
-		load
+		action load
+		;;
+	diff)
+		action diff
 		;;
 	*)
 		help $0
