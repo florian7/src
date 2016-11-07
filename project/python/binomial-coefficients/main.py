@@ -4,7 +4,7 @@ import sys
 from binomial_coefficients import *
 
 def help():
-    print("Usage: {} {--draw n | '[(n k), ...]'}".format(sys.argv[0]))
+    print("Usage: {} {{--draw n | '[(n k), ...]'}}".format(sys.argv[0]))
     exit()
 
 def main():
@@ -14,14 +14,19 @@ def main():
     if len(argv) < 2:
         help()
 
-    if argv[1] == '--draw':
+    if argv[1][0:2] == '--':
         try:
             n = int(argv[2])
         except ValueError as e:
             print("ValueError: " '\n'.join(e.args))
             help()
 
-        draw(n)
+        if argv[1] == '--draw':
+            draw(n)
+        elif argv[1] == '--test':
+            test(n)
+        else:
+            help()
 
     else:
         

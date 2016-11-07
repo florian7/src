@@ -31,3 +31,14 @@ if [[ -e $file ]]; then
 	echo "Optimizing makepkg compilation"
 	sed -i "s/^#$expression.*/MAKEFLAGS=\"-j$(nproc)\"/" $file
 fi
+
+
+# Pacman Configuration
+
+expression="ILoveCandy"
+file=/etc/pacman.conf
+
+if ! grep $expression $file; then
+	echo "Enabling ILoveCandy for pacman"
+	sed -i "s/Misc options/Misc options\n$expression/" $file
+fi
